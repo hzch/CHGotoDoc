@@ -1,0 +1,276 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 46;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		EE7A676A1CBB5EAE00CB252C /* CHGotoDoc.m in Sources */ = {isa = PBXBuildFile; fileRef = EE7A67691CBB5EAE00CB252C /* CHGotoDoc.m */; };
+		EE7A676F1CBB5ED600CB252C /* NSNotification+CHPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = EE7A676C1CBB5ED600CB252C /* NSNotification+CHPlugin.m */; };
+		EE7A67701CBB5ED600CB252C /* NSObject+CHIgnoreUndefinedKey.m in Sources */ = {isa = PBXBuildFile; fileRef = EE7A676E1CBB5ED600CB252C /* NSObject+CHIgnoreUndefinedKey.m */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		EE7A675F1CBB5E7B00CB252C /* CHGotoDoc.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CHGotoDoc.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
+		EE7A67621CBB5E7B00CB252C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		EE7A67681CBB5EAE00CB252C /* CHGotoDoc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHGotoDoc.h; sourceTree = "<group>"; };
+		EE7A67691CBB5EAE00CB252C /* CHGotoDoc.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHGotoDoc.m; sourceTree = "<group>"; };
+		EE7A676B1CBB5ED600CB252C /* NSNotification+CHPlugin.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSNotification+CHPlugin.h"; sourceTree = "<group>"; };
+		EE7A676C1CBB5ED600CB252C /* NSNotification+CHPlugin.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSNotification+CHPlugin.m"; sourceTree = "<group>"; };
+		EE7A676D1CBB5ED600CB252C /* NSObject+CHIgnoreUndefinedKey.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = "NSObject+CHIgnoreUndefinedKey.h"; sourceTree = "<group>"; };
+		EE7A676E1CBB5ED600CB252C /* NSObject+CHIgnoreUndefinedKey.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = "NSObject+CHIgnoreUndefinedKey.m"; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		EE7A675C1CBB5E7B00CB252C /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		EE7A67561CBB5E7B00CB252C = {
+			isa = PBXGroup;
+			children = (
+				EE7A67611CBB5E7B00CB252C /* CHGotoDoc */,
+				EE7A67601CBB5E7B00CB252C /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		EE7A67601CBB5E7B00CB252C /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				EE7A675F1CBB5E7B00CB252C /* CHGotoDoc.xcplugin */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		EE7A67611CBB5E7B00CB252C /* CHGotoDoc */ = {
+			isa = PBXGroup;
+			children = (
+				EE7A67621CBB5E7B00CB252C /* Info.plist */,
+				EE7A676B1CBB5ED600CB252C /* NSNotification+CHPlugin.h */,
+				EE7A676C1CBB5ED600CB252C /* NSNotification+CHPlugin.m */,
+				EE7A676D1CBB5ED600CB252C /* NSObject+CHIgnoreUndefinedKey.h */,
+				EE7A676E1CBB5ED600CB252C /* NSObject+CHIgnoreUndefinedKey.m */,
+				EE7A67681CBB5EAE00CB252C /* CHGotoDoc.h */,
+				EE7A67691CBB5EAE00CB252C /* CHGotoDoc.m */,
+			);
+			path = CHGotoDoc;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		EE7A675E1CBB5E7B00CB252C /* CHGotoDoc */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = EE7A67651CBB5E7B00CB252C /* Build configuration list for PBXNativeTarget "CHGotoDoc" */;
+			buildPhases = (
+				EE7A675B1CBB5E7B00CB252C /* Sources */,
+				EE7A675C1CBB5E7B00CB252C /* Frameworks */,
+				EE7A675D1CBB5E7B00CB252C /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = CHGotoDoc;
+			productName = CHGotoDoc;
+			productReference = EE7A675F1CBB5E7B00CB252C /* CHGotoDoc.xcplugin */;
+			productType = "com.apple.product-type.bundle";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		EE7A67571CBB5E7B00CB252C /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				LastUpgradeCheck = 0730;
+				ORGANIZATIONNAME = hzch;
+				TargetAttributes = {
+					EE7A675E1CBB5E7B00CB252C = {
+						CreatedOnToolsVersion = 7.3;
+					};
+				};
+			};
+			buildConfigurationList = EE7A675A1CBB5E7B00CB252C /* Build configuration list for PBXProject "CHGotoDoc" */;
+			compatibilityVersion = "Xcode 3.2";
+			developmentRegion = English;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+			);
+			mainGroup = EE7A67561CBB5E7B00CB252C;
+			productRefGroup = EE7A67601CBB5E7B00CB252C /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				EE7A675E1CBB5E7B00CB252C /* CHGotoDoc */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		EE7A675D1CBB5E7B00CB252C /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		EE7A675B1CBB5E7B00CB252C /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				EE7A676A1CBB5EAE00CB252C /* CHGotoDoc.m in Sources */,
+				EE7A67701CBB5ED600CB252C /* NSObject+CHIgnoreUndefinedKey.m in Sources */,
+				EE7A676F1CBB5ED600CB252C /* NSNotification+CHPlugin.m in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		EE7A67631CBB5E7B00CB252C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = macosx;
+			};
+			name = Debug;
+		};
+		EE7A67641CBB5E7B00CB252C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++0x";
+				CLANG_CXX_LIBRARY = "libc++";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				CODE_SIGN_IDENTITY = "-";
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu99;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				MACOSX_DEPLOYMENT_TARGET = 10.11;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				SDKROOT = macosx;
+			};
+			name = Release;
+		};
+		EE7A67661CBB5E7B00CB252C /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = "$(HOME)";
+				INFOPLIST_FILE = CHGotoDoc/Info.plist;
+				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
+				PRODUCT_BUNDLE_IDENTIFIER = com.hzch.CHGotoDoc;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				WRAPPER_EXTENSION = xcplugin;
+			};
+			name = Debug;
+		};
+		EE7A67671CBB5E7B00CB252C /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				COMBINE_HIDPI_IMAGES = YES;
+				DEPLOYMENT_LOCATION = YES;
+				DSTROOT = "$(HOME)";
+				INFOPLIST_FILE = CHGotoDoc/Info.plist;
+				INSTALL_PATH = "/Library/Application Support/Developer/Shared/Xcode/Plug-ins";
+				PRODUCT_BUNDLE_IDENTIFIER = com.hzch.CHGotoDoc;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SKIP_INSTALL = NO;
+				WRAPPER_EXTENSION = xcplugin;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		EE7A675A1CBB5E7B00CB252C /* Build configuration list for PBXProject "CHGotoDoc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EE7A67631CBB5E7B00CB252C /* Debug */,
+				EE7A67641CBB5E7B00CB252C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		EE7A67651CBB5E7B00CB252C /* Build configuration list for PBXNativeTarget "CHGotoDoc" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				EE7A67661CBB5E7B00CB252C /* Debug */,
+				EE7A67671CBB5E7B00CB252C /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = EE7A67571CBB5E7B00CB252C /* Project object */;
+}
