@@ -14,4 +14,7 @@
 - (NSString*)chGetBundleId;
 - (NSString*)chGetDeviceId;
 - (NSString*)chGetInfoPath;
+- (NSString*)chGetDeviceType;
+- (NSString*)chGetSchemeName;
+- (NSString*)chGetOSVersion;
 @end

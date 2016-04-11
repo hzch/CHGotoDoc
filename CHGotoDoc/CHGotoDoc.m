@@ -9,6 +9,8 @@
 #import "CHGotoDoc.h"
 #import "NSNotification+CHPlugin.h"
 static NSString * const kCHPluginsMenuTitle = @"Plugins";
+static NSString * const kInfoWithNotFoundDocuments = @"Maybe the documents of your app not created yet. Try again until your app run. If it still doesn't work, send email to jch.main@gmail.com.";
+static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it still doesn't work, send email to jch.main@gmail.com.";
 
 @interface CHGotoDoc ()
 @property (nonatomic) NSMenuItem *pluginsMenuItem;
@@ -16,6 +18,7 @@ static NSString * const kCHPluginsMenuTitle = @"Plugins";
 @property (nonatomic) NSString *currentDeviceAppPath;
 @property (nonatomic) NSString *currentDocuments;
 @property (nonatomic) NSFileManager *fileManager;
+@property (nonatomic) NSMenuItem* gotoDocItem;
 @end
 
 @implementation CHGotoDoc
@@ -60,11 +63,7 @@ static NSString * const kCHPluginsMenuTitle = @"Plugins";
 #pragma mark - Plugin menu
 - (void)addPluginMenu
 {
-    NSMenuItem* menuItem = [NSMenuItem new];
-    menuItem.title = @"Go To Documents";
-    menuItem.target = self;
-    menuItem.action = @selector(gotoDocuments);
-    [self.pluginsMenuItem.submenu addItem:menuItem];
+    [self.pluginsMenuItem.submenu addItem:self.gotoDocItem];
 }
 
 - (void)gotoDocuments
@@ -74,7 +73,7 @@ static NSString * const kCHPluginsMenuTitle = @"Plugins";
         NSAlert *alert = [[NSAlert alloc] init];
         [alert addButtonWithTitle:@"OK"];
         [alert setMessageText:@"Not found documents!"];
-        [alert setInformativeText:@"Please build or run with your project. If it still doesn't work, send email to jch.main@gmail.com."];
+        [alert setInformativeText:kInfoWithNotFoundDocuments];
         [alert setAlertStyle:NSWarningAlertStyle];
         [alert runModal];
         return;
@@ -85,6 +84,16 @@ static NSString * const kCHPluginsMenuTitle = @"Plugins";
     system(str);
 }
 
+- (void)gotoUnkown
+{
+    NSAlert *alert = [[NSAlert alloc] init];
+    [alert addButtonWithTitle:@"OK"];
+    [alert setMessageText:@"Unkown device!"];
+    [alert setInformativeText:kInfoWithUnkownDevice];
+    [alert setAlertStyle:NSWarningAlertStyle];
+    [alert runModal];
+}
+
 #pragma mark - install BundleId and Simulator
 - (void)buildWillStart:(NSNotification *)notification
 {
@@ -92,9 +101,42 @@ static NSString * const kCHPluginsMenuTitle = @"Plugins";
     self.currentDocuments = nil;
     self.currentBundleId = [notification chGetBundleId];
     self.currentDeviceAppPath = [notification chGetDeviceAppPath];
+    
+    NSString *device = [notification chGetDeviceType];
+    NSString *osVerison = [notification chGetOSVersion];
+    NSString *scheme = [notification chGetSchemeName];
+    
+    [self gotoDoc:self.currentBundleId.length && self.currentDeviceAppPath.length && device.length
+           device:device
+        osVersion:osVerison
+           scheme:scheme];
+}
+
+- (void)gotoDoc:(BOOL)gotoDoc device:(NSString*)device osVersion:(NSString*)osVersion scheme:(NSString*)scheme
+{
+    _gotoDocItem.target = self;
+    if (gotoDoc) {
+        self.gotoDocItem.title = [NSString stringWithFormat:@"Go To Documents (%@,%@,%@)", device, osVersion,scheme];
+        self.gotoDocItem.action = @selector(gotoDocuments);
+    } else {
+        self.gotoDocItem.title = @"Go To Documents (Unkown)";
+        self.gotoDocItem.action = @selector(gotoUnkown);
+    }
 }
 
 #pragma mark - setter & getter
+- (NSMenuItem *)gotoDocItem
+{
+    if (_gotoDocItem != nil) {
+        return _gotoDocItem;
+    }
+    
+    _gotoDocItem = [NSMenuItem new];
+    _gotoDocItem.title = @"Go To Documents (Build first!)";
+    _gotoDocItem.target = nil;
+    return _gotoDocItem;
+}
+
 - (NSMenuItem *)pluginsMenuItem
 {
     if (_pluginsMenuItem != nil) {

@@ -31,7 +31,22 @@
 
 - (NSString*)chGetDeviceId
 {
-    return [self.object valueForKeyPath:@"_buildParameters._activeRuDestination._targetDevice._identifier"];
+    return [self.object valueForKeyPath:@"_buildParameters._activeRunDestination._targetDevice._identifier"];
+}
+
+- (NSString*)chGetDeviceType
+{
+    return [[self.object valueForKeyPath:@"_buildParameters._activeRunDestination._targetDevice._device._deviceTypeIdentifier"] componentsSeparatedByString:@"."].lastObject;
+}
+
+- (NSString*)chGetOSVersion
+{
+    return [[self.object valueForKeyPath:@"_buildParameters._activeRunDestination._targetDevice._device._runtimeIdentifier"] componentsSeparatedByString:@"."].lastObject;
+}
+
+- (NSString*)chGetSchemeName
+{
+    return [self.object valueForKeyPath:@"_schemeIdentifier._entityName"];
 }
 
 - (NSString*)chGetInfoPath
@@ -46,6 +61,6 @@
         NSLog(@"No Xcode3TargetProduct in buildables.");
         return nil;
     }
-    return [self.object valueForKeyPath:@"_blueprint._pbxTarget._infoPlistRef._absolutePath"];
+    return [Xcode3TargetProduct valueForKeyPath:@"_blueprint._pbxTarget._infoPlistRef._absolutePath"];
 }
 @end
