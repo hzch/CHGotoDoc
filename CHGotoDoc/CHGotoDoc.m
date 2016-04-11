@@ -8,20 +8,27 @@
 
 #import "CHGotoDoc.h"
 #import "NSNotification+CHPlugin.h"
+
 static NSString * const kCHPluginsMenuTitle = @"Plugins";
+static NSString * const kDocListMenuTitle = @"Documents List";
 static NSString * const kInfoWithNotFoundDocuments = @"Maybe the documents of your app not created yet. Try again until your app run. If it still doesn't work, send email to jch.main@gmail.com.";
 static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it still doesn't work, send email to jch.main@gmail.com.";
 
 @interface CHGotoDoc ()
 @property (nonatomic) NSMenuItem *pluginsMenuItem;
+@property (nonatomic) NSMenuItem *gotoDocItem;
+@property (nonatomic) NSMenuItem *docListMenuItem;
+
 @property (nonatomic) NSString *currentBundleId;
 @property (nonatomic) NSString *currentDeviceAppPath;
 @property (nonatomic) NSString *currentDocuments;
+
 @property (nonatomic) NSFileManager *fileManager;
-@property (nonatomic) NSMenuItem* gotoDocItem;
 @end
 
 @implementation CHGotoDoc
+
+#pragma mark - life cycle
 /// 系统接口，Xcode启动时会调
 +(void)pluginDidLoad:(NSBundle *)plugin
 {
@@ -43,29 +50,61 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
 {
     if (self = [super init]) {
         [[NSNotificationCenter defaultCenter] addObserver:self
-                                                 selector:@selector(didApplicationFinishLaunchingNotification:)
+                                                 selector:@selector(addPluginMenu)
                                                      name:NSApplicationDidFinishLaunchingNotification
                                                    object:nil];
-        
         [[NSNotificationCenter defaultCenter] addObserver:self
                                                  selector:@selector(buildWillStart:)
                                                      name:@"IDEBuildOperationWillStartNotification"
+                                                   object:nil];
+        [[NSNotificationCenter defaultCenter] addObserver:self
+                                                 selector:@selector(updateDocList)
+                                                     name:@"NSMenuDidBeginTrackingNotification"
                                                    object:nil];
     }
     return self;
 }
 
-- (void)didApplicationFinishLaunchingNotification:(NSNotification*)noti
-{
-    [self addPluginMenu];
-}
-
-#pragma mark - Plugin menu
+#pragma mark - NSNotification
 - (void)addPluginMenu
 {
     [self.pluginsMenuItem.submenu addItem:self.gotoDocItem];
 }
 
+- (void)buildWillStart:(NSNotification *)notification
+{
+    NSLog(@"[CHPlugin] Xcode build will start.");
+    self.currentDocuments = nil;
+    self.currentBundleId = [notification chGetBundleId];
+    self.currentDeviceAppPath = [notification chGetDeviceAppPath];
+    
+    NSString *device = [notification chGetDeviceType];
+    NSString *osVerison = [notification chGetOSVersion];
+    NSString *scheme = [notification chGetSchemeName];
+    
+    [self gotoDoc:self.currentBundleId.length && self.currentDeviceAppPath.length && device.length
+           device:device
+        osVersion:osVerison
+           scheme:scheme];
+}
+
+- (void)updateDocList
+{
+    [self.docListMenuItem.submenu removeAllItems];
+    if (self.currentDocuments.length == 0) {
+        return;
+    }
+    NSArray *files = [self.fileManager contentsOfDirectoryAtPath:self.currentDocuments error:nil];
+    for (NSString *pathName in files) {
+        NSMenuItem *item = [[NSMenuItem alloc] init];
+        item.title = pathName;
+        item.target = self;
+        item.action = @selector(clickDocListWithMenu:);
+        [self.docListMenuItem.submenu addItem:item];
+    }
+}
+
+#pragma mark - Go to documents
 - (void)gotoDocuments
 {
     NSString *currentDocuments = self.currentDocuments;
@@ -94,24 +133,6 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
     [alert runModal];
 }
 
-#pragma mark - install BundleId and Simulator
-- (void)buildWillStart:(NSNotification *)notification
-{
-    NSLog(@"[CHPlugin] Xcode build will start.");
-    self.currentDocuments = nil;
-    self.currentBundleId = [notification chGetBundleId];
-    self.currentDeviceAppPath = [notification chGetDeviceAppPath];
-    
-    NSString *device = [notification chGetDeviceType];
-    NSString *osVerison = [notification chGetOSVersion];
-    NSString *scheme = [notification chGetSchemeName];
-    
-    [self gotoDoc:self.currentBundleId.length && self.currentDeviceAppPath.length && device.length
-           device:device
-        osVersion:osVerison
-           scheme:scheme];
-}
-
 - (void)gotoDoc:(BOOL)gotoDoc device:(NSString*)device osVersion:(NSString*)osVersion scheme:(NSString*)scheme
 {
     _gotoDocItem.target = self;
@@ -124,6 +145,16 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
     }
 }
 
+#pragma mark - Documents list
+- (void)clickDocListWithMenu:(NSMenuItem*)menu
+{
+    NSString *fileName = [self.currentDocuments stringByAppendingPathComponent:menu.title];
+    NSString *open = [NSString stringWithFormat:@"open %@", fileName];
+    const char *str = [open UTF8String];
+    system(str);
+}
+
+
 #pragma mark - setter & getter
 - (NSMenuItem *)gotoDocItem
 {
@@ -131,7 +162,7 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
         return _gotoDocItem;
     }
     
-    _gotoDocItem = [NSMenuItem new];
+    _gotoDocItem = [[NSMenuItem alloc] init];
     _gotoDocItem.keyEquivalentModifierMask = NSAlternateKeyMask;
     _gotoDocItem.keyEquivalent = @"g";
     _gotoDocItem.title = @"Go To Documents (Build first!)";
@@ -154,6 +185,21 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
         [mainMenu addItem:_pluginsMenuItem];
     }
     return _pluginsMenuItem;
+}
+
+- (NSMenuItem *)docListMenuItem
+{
+    if (_docListMenuItem != nil) {
+        return _docListMenuItem;
+    }
+    
+    if (!_docListMenuItem) {
+        _docListMenuItem = [[NSMenuItem alloc] init];
+        _docListMenuItem.title = kDocListMenuTitle;
+        _docListMenuItem.submenu = [[NSMenu alloc] initWithTitle:kDocListMenuTitle];
+        [self.pluginsMenuItem.submenu addItem:_docListMenuItem];
+    }
+    return _docListMenuItem;
 }
 
 - (NSFileManager *)fileManager
