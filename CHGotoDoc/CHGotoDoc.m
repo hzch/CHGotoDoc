@@ -132,6 +132,8 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
     }
     
     _gotoDocItem = [NSMenuItem new];
+    _gotoDocItem.keyEquivalentModifierMask = NSAlternateKeyMask;
+    _gotoDocItem.keyEquivalent = @"g";
     _gotoDocItem.title = @"Go To Documents (Build first!)";
     _gotoDocItem.target = nil;
     return _gotoDocItem;
