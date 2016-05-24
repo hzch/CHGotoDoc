@@ -10,10 +10,10 @@
 
 @interface NSNotification (CHPlugin)
 
-- (NSString*)chGetDeviceAppPath;
-- (NSString*)chGetBundleId;
+- (NSArray*)chGetDeviceAppPath;
+- (NSArray*)chGetBundleId;
+- (NSArray*)chGetInfoPath;
 - (NSString*)chGetDeviceId;
-- (NSString*)chGetInfoPath;
 - (NSString*)chGetDeviceType;
 - (NSString*)chGetSchemeName;
 - (NSString*)chGetOSVersion;

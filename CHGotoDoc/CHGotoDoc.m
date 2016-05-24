@@ -10,7 +10,8 @@
 #import "NSNotification+CHPlugin.h"
 
 static NSString * const kCHPluginsMenuTitle = @"Plugins";
-static NSString * const kDocListMenuTitle = @"Documents List";
+static NSString * const kDocListMenuTitle = @"Documents Files List";
+static NSString * const kDocsListMenuTitle = @"Documents List";
 static NSString * const kInfoWithNotFoundDocuments = @"Maybe the documents of your app not created yet. Try again until your app run. If it still doesn't work, send email to jch.main@gmail.com.";
 static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it still doesn't work, send email to jch.main@gmail.com.";
 
@@ -18,10 +19,11 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
 @property (nonatomic) NSMenuItem *pluginsMenuItem;
 @property (nonatomic) NSMenuItem *gotoDocItem;
 @property (nonatomic) NSMenuItem *docListMenuItem;
+@property (nonatomic) NSMenuItem *docsListMenuItem;
 
-@property (nonatomic) NSString *currentBundleId;
-@property (nonatomic) NSString *currentDeviceAppPath;
-@property (nonatomic) NSString *currentDocuments;
+@property (nonatomic) NSArray *currentBundleId;
+@property (nonatomic) NSArray *currentDeviceAppPath;
+@property (nonatomic) NSArray *currentDocuments;
 
 @property (nonatomic) NSFileManager *fileManager;
 @end
@@ -82,7 +84,7 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
     NSString *osVerison = [notification chGetOSVersion];
     NSString *scheme = [notification chGetSchemeName];
     
-    [self gotoDoc:self.currentBundleId.length && self.currentDeviceAppPath.length && device.length
+    [self gotoDoc:self.currentDocuments.count
            device:device
         osVersion:osVerison
            scheme:scheme];
@@ -91,11 +93,26 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
 - (void)updateDocList
 {
     [self.docListMenuItem.submenu removeAllItems];
-    if (self.currentDocuments.length == 0) {
+    if (self.currentDocuments.count == 0) {
         return;
     }
-    NSArray *files = [self.fileManager contentsOfDirectoryAtPath:self.currentDocuments error:nil];
-    for (NSString *pathName in files) {
+    NSMutableArray *filess = [NSMutableArray array];
+    [self.currentDocuments enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger index, BOOL *stop) {
+        if (obj.length == 0) {
+            return ;
+        }
+        NSArray *files = [self.fileManager contentsOfDirectoryAtPath:obj error:nil];
+        if (files.count == 0) {
+            return;
+        }
+        NSMutableArray *needFiles = [NSMutableArray array];
+        [files enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL *stop) {
+            [needFiles addObject:[NSString stringWithFormat:@"($%ld)%@",(long)index,obj]];
+        }];
+        [filess addObjectsFromArray:needFiles];
+    }];
+    
+    for (NSString *pathName in filess) {
         NSMenuItem *item = [[NSMenuItem alloc] init];
         item.title = pathName;
         item.target = self;
@@ -107,7 +124,7 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
 #pragma mark - Go to documents
 - (void)gotoDocuments
 {
-    NSString *currentDocuments = self.currentDocuments;
+    NSString *currentDocuments = self.currentDocuments.firstObject;
     if (currentDocuments.length == 0) {
         NSAlert *alert = [[NSAlert alloc] init];
         [alert addButtonWithTitle:@"OK"];
@@ -118,7 +135,7 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
         return;
     }
     
-    NSString *open = [NSString stringWithFormat:@"open %@",self.currentDocuments];
+    NSString *open = [NSString stringWithFormat:@"open %@",self.currentDocuments.firstObject];
     const char *str = [open UTF8String];
     system(str);
 }
@@ -137,7 +154,7 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
 {
     _gotoDocItem.target = self;
     if (gotoDoc) {
-        self.gotoDocItem.title = [NSString stringWithFormat:@"Go To Documents (%@,%@,%@)", device, osVersion,scheme];
+        self.gotoDocItem.title = [NSString stringWithFormat:@"Go To Documents ($0) (%@,%@,%@)", device, osVersion,scheme];
         self.gotoDocItem.action = @selector(gotoDocuments);
     } else {
         self.gotoDocItem.title = @"Go To Documents (Unkown)";
@@ -148,12 +165,35 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
 #pragma mark - Documents list
 - (void)clickDocListWithMenu:(NSMenuItem*)menu
 {
-    NSString *fileName = [self.currentDocuments stringByAppendingPathComponent:menu.title];
+    __block NSString *fileName = menu.title;
+    [self.currentDocuments enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL *stop) {
+        if (obj.length == 0) {
+            return ;
+        }
+        NSString *occur = [NSString stringWithFormat:@"($%ld)",(long)idx];
+        fileName = [fileName stringByReplacingOccurrencesOfString:occur withString:obj];
+    }];
     NSString *open = [NSString stringWithFormat:@"open %@", fileName];
     const char *str = [open UTF8String];
     system(str);
 }
 
+- (void)clickDocsListWithMenu:(NSMenuItem*)menu
+{
+    if (self.currentDocuments.count <= menu.tag) {
+        NSAlert *alert = [[NSAlert alloc] init];
+        [alert addButtonWithTitle:@"OK"];
+        [alert setMessageText:@"Not found documents!"];
+        [alert setInformativeText:kInfoWithNotFoundDocuments];
+        [alert setAlertStyle:NSWarningAlertStyle];
+        [alert runModal];
+        return;
+    }
+    
+    NSString *open = [NSString stringWithFormat:@"open %@",self.currentDocuments[menu.tag]];
+    const char *str = [open UTF8String];
+    system(str);
+}
 
 #pragma mark - setter & getter
 - (NSMenuItem *)gotoDocItem
@@ -202,6 +242,21 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
     return _docListMenuItem;
 }
 
+- (NSMenuItem *)docsListMenuItem
+{
+    if (_docsListMenuItem != nil) {
+        return _docsListMenuItem;
+    }
+    
+    if (!_docsListMenuItem) {
+        _docsListMenuItem = [[NSMenuItem alloc] init];
+        _docsListMenuItem.title = kDocsListMenuTitle;
+        _docsListMenuItem.submenu = [[NSMenu alloc] initWithTitle:kDocsListMenuTitle];
+        [self.pluginsMenuItem.submenu addItem:_docsListMenuItem];
+    }
+    return _docsListMenuItem;
+}
+
 - (NSFileManager *)fileManager
 {
     if (!_fileManager) {
@@ -210,31 +265,59 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
     return _fileManager;
 }
 
-- (NSString *)currentDocuments
+- (NSArray *)currentDocuments
 {
     if (_currentDocuments) {
         return _currentDocuments;
     }
     
-    if (self.currentDeviceAppPath.length == 0 || self.currentBundleId.length == 0) {
+    if (self.currentDeviceAppPath.count == 0 || self.currentBundleId.count == 0) {
         return nil;
     }
-    
-    NSArray *paths = [self.fileManager contentsOfDirectoryAtPath:self.currentDeviceAppPath error:nil];
-    for (NSString *pathName in paths) {
-        NSString *fileName = [self.currentDeviceAppPath stringByAppendingPathComponent:pathName];
-        NSString *fileUrl = [fileName stringByAppendingPathComponent:@".com.apple.mobile_container_manager.metadata.plist"];
-        
-        if([self.fileManager fileExistsAtPath:fileUrl]){
-            NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:fileUrl];
-            NSString *bundleId = [dict valueForKeyPath:@"MCMMetadataIdentifier"];
-            if (bundleId.length != 0 && [self.currentBundleId isEqualToString:bundleId]) {
-                _currentDocuments = [fileName stringByAppendingPathComponent:@"Documents"];
-                return _currentDocuments;
+    NSHashTable *documents = [NSHashTable hashTableWithOptions:NSPointerFunctionsStrongMemory];
+    [self.currentDeviceAppPath enumerateObjectsUsingBlock:^(NSString *appPath, NSUInteger idx, BOOL *stop) {
+        if (appPath.length == 0) {
+            return ;
+        }
+        NSArray *paths = [self.fileManager contentsOfDirectoryAtPath:appPath error:nil];
+        for (NSString *pathName in paths) {
+            NSString *fileName = [appPath stringByAppendingPathComponent:pathName];
+            NSString *fileUrl = [fileName stringByAppendingPathComponent:@".com.apple.mobile_container_manager.metadata.plist"];
+            
+            if([self.fileManager fileExistsAtPath:fileUrl]){
+                NSDictionary *dict = [NSDictionary dictionaryWithContentsOfFile:fileUrl];
+                NSString *bundleId = [dict valueForKeyPath:@"MCMMetadataIdentifier"];
+                
+                if (bundleId.length == 0) {
+                    return;
+                }
+                
+                [self.currentBundleId enumerateObjectsUsingBlock:^(NSString *bid, NSUInteger idx, BOOL *stop) {
+                    if ([bid isEqualToString:bundleId]) {
+                        [documents addObject:[fileName stringByAppendingPathComponent:@"Documents"]];
+                        
+                        
+                        *stop = YES;
+                    }
+                }];
             }
         }
+    }];
+    
+    if (documents.count != 0) {
+        _currentDocuments = [documents allObjects];
+        [self.docsListMenuItem.submenu removeAllItems];
+        [_currentDocuments enumerateObjectsUsingBlock:^(NSString *pathName, NSUInteger idx, BOOL *stop) {
+            NSMenuItem *item = [[NSMenuItem alloc] init];
+            item.title = [pathName stringByAppendingString:[NSString stringWithFormat:@" ($%ld)",(long)idx]];
+            item.target = self;
+            item.tag = idx;
+            item.action = @selector(clickDocsListWithMenu:);
+            [self.docsListMenuItem.submenu addItem:item];
+        }];
     }
     
-    return nil;
+    return _currentDocuments;
 }
+
 @end

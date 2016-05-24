@@ -16,55 +16,72 @@ typedef NS_ENUM(NSUInteger, CHTargetType) {
 };
 
 @implementation NSNotification (CHPlugin)
-- (NSString*)chGetDeviceAppPath
+
+- (NSArray*)chGetDeviceAppPath
 {
     NSString *deviceId = [self chGetDeviceId];
     if (deviceId.length == 0) {
         return nil;
     }
-    CHTargetType type = [self chGetTargetType];
-    switch (type) {
-        case CHTargetTypeApp:
-            return [NSString stringWithFormat:@"%@/Library/Developer/CoreSimulator/Devices/%@/data/Containers/Data/Application", NSHomeDirectory(),deviceId];
-            break;
-        case CHTargetTypeEx:
-            return [NSString stringWithFormat:@"%@/Library/Developer/CoreSimulator/Devices/%@/data/Containers/Data/PluginKitPlugin", NSHomeDirectory(),deviceId];
-            break;
-            
-        default:
-            return nil;
-    }
+    NSArray *types = [self chGetTargetType];
+    NSMutableArray *result = [NSMutableArray array];
+    [types enumerateObjectsUsingBlock:^(NSNumber *obj, NSUInteger idx, BOOL *stop) {
+        CHTargetType type = obj.integerValue;
+        NSString *path;
+        switch (type) {
+            case CHTargetTypeApp:
+                path = [NSString stringWithFormat:@"%@/Library/Developer/CoreSimulator/Devices/%@/data/Containers/Data/Application", NSHomeDirectory(),deviceId];
+                break;
+            case CHTargetTypeEx:
+                path =  [NSString stringWithFormat:@"%@/Library/Developer/CoreSimulator/Devices/%@/data/Containers/Data/PluginKitPlugin", NSHomeDirectory(),deviceId];
+                break;
+            default:
+                path =  @"";
+        }
+        [result addObject:path];
+    }];
+    return result;
 }
 
-- (CHTargetType)chGetTargetType
+- (NSArray*)chGetTargetType
 {
     NSArray *buildables = [self.object valueForKey:@"_buildables"];
     if (![buildables isKindOfClass:NSArray.class]) {
         return CHTargetTypeUnkown;
     }
-    
-    id Xcode3TargetProduct = buildables[0];
-    NSString *typeStr = [Xcode3TargetProduct valueForKeyPath:@"_filePath._pathString"];
-    if (![typeStr isKindOfClass:NSString.class]) {
-        return CHTargetTypeUnkown;
-    }
-    NSString *fileExtension = [self chFileExtensionWithString:typeStr];
-    if ([fileExtension isEqualToString:@"app"]) {
-        return CHTargetTypeApp;
-    } else if ([fileExtension isEqualToString:@"appex"]) {
-        return CHTargetTypeEx;
-    }
-    return CHTargetTypeUnkown;
+    NSMutableArray *result = [NSMutableArray array];
+    [buildables enumerateObjectsUsingBlock:^(id  Xcode3TargetProduct, NSUInteger idx, BOOL *stop) {
+        NSString *typeStr = [Xcode3TargetProduct valueForKeyPath:@"_filePath._pathString"];
+        if (![typeStr isKindOfClass:NSString.class]) {
+            [result addObject:@(CHTargetTypeUnkown)];
+            return ;
+        }
+        NSString *fileExtension = [self chFileExtensionWithString:typeStr];
+        if ([fileExtension isEqualToString:@"app"]) {
+            [result addObject:@(CHTargetTypeApp)];
+        } else if ([fileExtension isEqualToString:@"appex"]) {
+            [result addObject:@(CHTargetTypeEx)];
+        } else {
+            [result addObject:@(CHTargetTypeUnkown)];
+        }
+        return ;
+    }];
+    return result;
 }
 
-- (NSString*)chGetBundleId2
+- (NSArray*)chGetBundleId2
 {
-    NSString *infoPath = [self chGetInfoPath];
-    if (infoPath.length == 0) {
-        return nil;
-    }
-    NSDictionary *dic = [NSDictionary dictionaryWithContentsOfFile:infoPath];
-    return dic[@"CFBundleIdentifier"];
+    NSArray *paths = [self chGetInfoPath];
+    NSMutableArray *result = [NSMutableArray array];
+    [paths enumerateObjectsUsingBlock:^(NSString *infoPath, NSUInteger idx, BOOL *stop) {
+        if (infoPath.length == 0) {
+            [result addObject:@""];
+            return ;
+        }
+        NSDictionary *dic = [NSDictionary dictionaryWithContentsOfFile:infoPath];
+        [result addObject:dic[@"CFBundleIdentifier"]?:@""];
+    }];
+    return result;
 }
 
 - (NSString*)chGetDeviceId
@@ -87,64 +104,82 @@ typedef NS_ENUM(NSUInteger, CHTargetType) {
     return [self.object valueForKeyPath:@"_schemeIdentifier._entityName"];
 }
 
-- (NSString*)chGetInfoPath
+- (NSArray*)chGetInfoPath
 {
     NSArray *buildables = [self.object valueForKey:@"_buildables"];
     if (![buildables isKindOfClass:NSArray.class]) {
         return nil;
     }
     
-    id Xcode3TargetProduct = buildables[0];
-    return [Xcode3TargetProduct valueForKeyPath:@"_blueprint._pbxTarget._infoPlistRef._absolutePath"];
+    NSMutableArray *result = [NSMutableArray array];
+    [buildables enumerateObjectsUsingBlock:^(id  Xcode3TargetProduct, NSUInteger idx, BOOL *stop) {
+        NSString *path = [Xcode3TargetProduct valueForKeyPath:@"_blueprint._pbxTarget._infoPlistRef._absolutePath"];
+        [result addObject:path ?: @""];
+    }];
+    return result;
 }
 
-- (NSString*)chGetBundleId
+- (NSArray*)chGetBundleId
 {
     NSArray *buildables = [self.object valueForKey:@"_buildables"];
     if (![buildables isKindOfClass:NSArray.class]) {
         return nil;
     }
     
-    id Xcode3TargetProduct = buildables[0];
-    NSArray *subsections = [Xcode3TargetProduct valueForKeyPath:@"_blueprint._integrityLog._subsections"];
-    NSString *bundleId;
-    if (![subsections isKindOfClass:NSArray.class]) {
-        bundleId = [self chGetBundleId2];
-    } else {
-        id IDEActivityLogSection = subsections[0];
-        bundleId = [IDEActivityLogSection valueForKeyPath:@"_representedObject._infoPlistSettings.CFBundleIdentifier"];
+    NSMutableArray *result = [NSMutableArray array];
+    NSArray *bundleId2 = [self chGetBundleId2];
+    NSArray *projectPaths = [self chGetProjectPath];
+    [buildables enumerateObjectsUsingBlock:^(id  Xcode3TargetProduct, NSUInteger idx, BOOL *stop) {
+        NSArray *subsections = [Xcode3TargetProduct valueForKeyPath:@"_blueprint._integrityLog._subsections"];
+        NSString *bundleId;
+        if (![subsections isKindOfClass:NSArray.class]) {
+            bundleId = bundleId2.count > idx ? bundleId2[idx] : @"";
+        } else {
+            id IDEActivityLogSection = subsections[0];
+            bundleId = [IDEActivityLogSection valueForKeyPath:@"_representedObject._infoPlistSettings.CFBundleIdentifier"];
+            
+        }
+        if (![bundleId hasPrefix:@"$(PRODUCT_BUNDLE_IDENTIFIER)"]) {
+            [result addObject:bundleId?:@""];
+            return ;
+        }
         
-    }
-    if (![bundleId hasPrefix:@"$(PRODUCT_BUNDLE_IDENTIFIER)"]) {
-        return bundleId;
-    }
-    
-    NSString *projectPath = [self chGetProjectPath];
-    if (projectPath.length == 0) {
-        return nil;
-    }
-    projectPath = [projectPath stringByAppendingString:@"/project.pbxproj"];
-    NSString *project = [NSString stringWithContentsOfFile:projectPath encoding:NSUTF8StringEncoding error:nil];
-    NSRange range = [project rangeOfString:@"PRODUCT_BUNDLE_IDENTIFIER"];
-    if (range.length == 0) {
-        return nil;
-    }
-    
-    NSString *tmp = [project substringWithRange:NSMakeRange(range.location + range.length + 3, 100)];
-    range = [tmp rangeOfString:@";"];
-    NSString *productBI = [tmp substringToIndex:range.location];
-    return [bundleId stringByReplacingOccurrencesOfString:@"$(PRODUCT_BUNDLE_IDENTIFIER)" withString:productBI];
+        // 以下方法很脆 待改进
+        NSString *projectPath = projectPaths.count > idx ? projectPaths[idx] : @"";
+        if (projectPath.length == 0) {
+            [result addObject:@""];
+            return ;
+        }
+        projectPath = [projectPath stringByAppendingString:@"/project.pbxproj"];
+        NSString *project = [NSString stringWithContentsOfFile:projectPath encoding:NSUTF8StringEncoding error:nil];
+        NSRange range = [project rangeOfString:@"PRODUCT_BUNDLE_IDENTIFIER"];
+        if (range.length == 0) {
+            [result addObject:@""];
+            return ;
+        }
+        
+        NSString *tmp = [project substringWithRange:NSMakeRange(range.location + range.length + 3, 100)];
+        range = [tmp rangeOfString:@";"];
+        NSString *productBI = [tmp substringToIndex:range.location];
+        NSString *bid = [bundleId stringByReplacingOccurrencesOfString:@"$(PRODUCT_BUNDLE_IDENTIFIER)" withString:productBI];
+        [result addObject:bid];
+    }];
+    return result;
 }
 
-- (NSString*)chGetProjectPath
+- (NSArray*)chGetProjectPath
 {
     NSArray *buildables = [self.object valueForKey:@"_buildables"];
     if (![buildables isKindOfClass:NSArray.class]) {
         return nil;
     }
-    
-    id Xcode3TargetProduct = buildables[0];
-    return [Xcode3TargetProduct valueForKeyPath:@"_blueprint._proxy._indexableObject._project._filePath._pathString"];
+    NSMutableArray *result = [NSMutableArray array];
+    [buildables enumerateObjectsUsingBlock:^(id Xcode3TargetProduct, NSUInteger idx, BOOL *stop) {
+        
+        NSString *path = [Xcode3TargetProduct valueForKeyPath:@"_blueprint._proxy._indexableObject._project._filePath._pathString"];
+        [result addObject:path ?: @""];
+    }];
+    return result;
 }
 #pragma mark - Misc
 - (NSString *)chFileExtensionWithString:(NSString*)string
