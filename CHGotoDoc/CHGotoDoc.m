@@ -92,6 +92,7 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
 
 - (void)updateDocList
 {
+    self.currentDocuments = nil;
     [self.docListMenuItem.submenu removeAllItems];
     if (self.currentDocuments.count == 0) {
         return;
