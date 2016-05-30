@@ -171,6 +171,7 @@ static NSString * const kInfoWithUnkownDevice = @"Only surport simulator! If it 
         if (obj.length == 0) {
             return ;
         }
+        obj = [obj stringByAppendingString:@"/"];
         NSString *occur = [NSString stringWithFormat:@"($%ld)",(long)idx];
         fileName = [fileName stringByReplacingOccurrencesOfString:occur withString:obj];
     }];
