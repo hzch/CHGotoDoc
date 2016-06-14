@@ -88,14 +88,13 @@ static NSString * const kCHPluginsMenuTitle = @"Plugins";
     [self.recentDocsMenuItem.submenu removeAllItems];
     
     NSArray <CHDocumentItem*>*recentDocs = [CHDocumentsLogic getRecentDocuments];
-    if (recentDocs.count == 0) {
+    [recentDocs enumerateObjectsUsingBlock:^(CHDocumentItem *obj, NSUInteger idx, BOOL *stop) {
+        [self addDocsToMenu:self.recentDocsMenuItem doc:obj];
+    }];
+    if (self.recentDocsMenuItem.submenu.numberOfItems == 0) {
         NSMenuItem *item = [[NSMenuItem alloc] init];
         item.title = @"Not found!";
         [self.recentDocsMenuItem.submenu addItem:item];
-    } else {
-        [recentDocs enumerateObjectsUsingBlock:^(CHDocumentItem *obj, NSUInteger idx, BOOL *stop) {
-            [self addDocsToMenu:self.recentDocsMenuItem doc:obj];
-        }];
     }
     
     [self.appDocsMenuItem.submenu removeAllItems];
