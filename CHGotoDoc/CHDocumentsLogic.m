@@ -8,6 +8,11 @@
 
 #import "CHDocumentsLogic.h"
 #import "CHDocumentsCache.h"
+#import "NSNotification+CHPlugin.h"
+
+static NSString* const kCHDocumnetsUserDefaultKeyBundleIds = @"CHDocumnetsUserDefaultKeyBundleIds";
+static NSString* const kCHDocumnetsUserDefaultKeyDevice = @"CHDocumnetsUserDefaultKeyDevice";
+static NSString* const kCHDocumnetsUserDefaultKeyOSVersion = @"CHDocumnetsUserDefaultKeyOSVersion";
 
 @implementation CHDocumentsLogic
 + (void)installDoc
@@ -93,6 +98,86 @@
             [result addObject:item];
         }
     }
+    return result;
+}
+
++ (void)updateCurrentApp:(NSNotification*)notification
+{
+    NSArray *bundleIds = [notification chGetBundleId];
+    NSString *device = [notification chGetDeviceType];
+    NSString *osVersion = [notification chGetOSVersion];
+    
+    if (bundleIds.count == 0) {
+        return;
+    }
+    NSArray <CHDocumentItem*>* apps = [[CHDocumentsCache sharedInstance] appDocumentsPath];
+    NSArray <CHDocumentItem*>* plugins = [[CHDocumentsCache sharedInstance] pluginDocumentsPath];
+    NSArray <CHDocumentItem*>* groups = [[CHDocumentsCache sharedInstance] groupDocumentsPath];
+    
+    NSMutableArray <CHDocumentItem*>*all = [NSMutableArray arrayWithArray:apps ?: @[]];
+    [all addObjectsFromArray:plugins ?: @[]];
+    [all addObjectsFromArray:groups ?: @[]];
+    
+    __block BOOL find = NO;
+    [bundleIds enumerateObjectsUsingBlock:^(NSString *bundleId, NSUInteger idx, BOOL *stop) {
+        [all enumerateObjectsUsingBlock:^(CHDocumentItem *obj, NSUInteger idx, BOOL *stop) {
+            if ([obj.bundleId isEqualToString:bundleId] &&
+                [obj.device isEqualToString:device] &&
+                [obj.osVersion isEqualToString:osVersion]) {
+                find = YES;
+                *stop = YES;
+            }
+        }];
+        if (find) {
+            *stop = YES;
+        }
+    }];
+    
+    if (find) {
+        [[NSUserDefaults standardUserDefaults] setObject:bundleIds forKey:kCHDocumnetsUserDefaultKeyBundleIds];
+        [[NSUserDefaults standardUserDefaults] setObject:device forKey:kCHDocumnetsUserDefaultKeyDevice];
+        [[NSUserDefaults standardUserDefaults] setObject:osVersion forKey:kCHDocumnetsUserDefaultKeyOSVersion];
+    }
+}
+
++ (NSArray <CHDocumentItem*>*)getRecentDocuments
+{
+    NSArray *bundleIds = [[NSUserDefaults standardUserDefaults] objectForKey:kCHDocumnetsUserDefaultKeyBundleIds];
+    NSString *device = [[NSUserDefaults standardUserDefaults] objectForKey:kCHDocumnetsUserDefaultKeyDevice];
+    NSString *osVersion = [[NSUserDefaults standardUserDefaults] objectForKey:kCHDocumnetsUserDefaultKeyOSVersion];
+    if (bundleIds.count == 0) {
+        return nil;
+    }
+    NSMutableArray *allBundleIds = [bundleIds mutableCopy];
+    [bundleIds enumerateObjectsUsingBlock:^(NSString *obj, NSUInteger idx, BOOL *stop) {
+        NSRange range = [obj rangeOfString:@"." options:NSBackwardsSearch];
+        if (range.length == 0) {
+            return ;
+        }
+        if ([obj componentsSeparatedByString:@"."].count < 4) {
+            return ;
+        }
+        [allBundleIds addObject:[obj substringToIndex:range.location]];
+    }];
+    
+    
+    NSArray <CHDocumentItem*>* apps = [[CHDocumentsCache sharedInstance] appDocumentsPath];
+    NSArray <CHDocumentItem*>* plugins = [[CHDocumentsCache sharedInstance] pluginDocumentsPath];
+    NSArray <CHDocumentItem*>* groups = [[CHDocumentsCache sharedInstance] groupDocumentsPath];
+    NSMutableArray <CHDocumentItem*>*all = [NSMutableArray arrayWithArray:apps ?: @[]];
+    [all addObjectsFromArray:plugins ?: @[]];
+    [all addObjectsFromArray:groups ?: @[]];
+    
+    NSMutableArray *result = [NSMutableArray array];
+    [allBundleIds enumerateObjectsUsingBlock:^(NSString *bundleId, NSUInteger idx, BOOL *stop) {
+        [all enumerateObjectsUsingBlock:^(CHDocumentItem *obj, NSUInteger idx, BOOL *stop) {
+            if ([obj.bundleId hasPrefix:bundleId] &&
+                [obj.device isEqualToString:device] &&
+                [obj.osVersion isEqualToString:osVersion]) {
+                [result addObject:obj];
+            }
+        }];
+    }];
     return result;
 }
 

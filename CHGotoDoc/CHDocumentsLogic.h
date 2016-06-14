@@ -7,7 +7,10 @@
 //
 
 #import <Foundation/Foundation.h>
+#import "CHDocumentItem.h"
 
 @interface CHDocumentsLogic : NSObject
 + (void)installDoc;
++ (NSArray <CHDocumentItem*>*)getRecentDocuments;
++ (void)updateCurrentApp:(NSNotification*)notification;
 @end
