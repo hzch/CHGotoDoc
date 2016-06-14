@@ -7,12 +7,21 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EE1C036A1D0EB3A30095D925 /* CHDocumentsCache.m in Sources */ = {isa = PBXBuildFile; fileRef = EE1C03691D0EB3A30095D925 /* CHDocumentsCache.m */; };
+		EE1C036E1D0EB4670095D925 /* CHDocumentItem.m in Sources */ = {isa = PBXBuildFile; fileRef = EE1C036D1D0EB4670095D925 /* CHDocumentItem.m */; };
+		EE1C03711D0EBBEE0095D925 /* CHDocumentsLogic.m in Sources */ = {isa = PBXBuildFile; fileRef = EE1C03701D0EBBEE0095D925 /* CHDocumentsLogic.m */; };
 		EE7A676A1CBB5EAE00CB252C /* CHGotoDoc.m in Sources */ = {isa = PBXBuildFile; fileRef = EE7A67691CBB5EAE00CB252C /* CHGotoDoc.m */; };
 		EE7A676F1CBB5ED600CB252C /* NSNotification+CHPlugin.m in Sources */ = {isa = PBXBuildFile; fileRef = EE7A676C1CBB5ED600CB252C /* NSNotification+CHPlugin.m */; };
 		EE7A67701CBB5ED600CB252C /* NSObject+CHIgnoreUndefinedKey.m in Sources */ = {isa = PBXBuildFile; fileRef = EE7A676E1CBB5ED600CB252C /* NSObject+CHIgnoreUndefinedKey.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		EE1C03681D0EB3A30095D925 /* CHDocumentsCache.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHDocumentsCache.h; sourceTree = "<group>"; };
+		EE1C03691D0EB3A30095D925 /* CHDocumentsCache.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHDocumentsCache.m; sourceTree = "<group>"; };
+		EE1C036C1D0EB4670095D925 /* CHDocumentItem.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHDocumentItem.h; sourceTree = "<group>"; };
+		EE1C036D1D0EB4670095D925 /* CHDocumentItem.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHDocumentItem.m; sourceTree = "<group>"; };
+		EE1C036F1D0EBBEE0095D925 /* CHDocumentsLogic.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHDocumentsLogic.h; sourceTree = "<group>"; };
+		EE1C03701D0EBBEE0095D925 /* CHDocumentsLogic.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CHDocumentsLogic.m; sourceTree = "<group>"; };
 		EE7A675F1CBB5E7B00CB252C /* CHGotoDoc.xcplugin */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = CHGotoDoc.xcplugin; sourceTree = BUILT_PRODUCTS_DIR; };
 		EE7A67621CBB5E7B00CB252C /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		EE7A67681CBB5EAE00CB252C /* CHGotoDoc.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CHGotoDoc.h; sourceTree = "<group>"; };
@@ -60,6 +69,12 @@
 				EE7A676E1CBB5ED600CB252C /* NSObject+CHIgnoreUndefinedKey.m */,
 				EE7A67681CBB5EAE00CB252C /* CHGotoDoc.h */,
 				EE7A67691CBB5EAE00CB252C /* CHGotoDoc.m */,
+				EE1C03681D0EB3A30095D925 /* CHDocumentsCache.h */,
+				EE1C03691D0EB3A30095D925 /* CHDocumentsCache.m */,
+				EE1C036F1D0EBBEE0095D925 /* CHDocumentsLogic.h */,
+				EE1C03701D0EBBEE0095D925 /* CHDocumentsLogic.m */,
+				EE1C036C1D0EB4670095D925 /* CHDocumentItem.h */,
+				EE1C036D1D0EB4670095D925 /* CHDocumentItem.m */,
 			);
 			path = CHGotoDoc;
 			sourceTree = "<group>";
@@ -130,8 +145,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EE1C03711D0EBBEE0095D925 /* CHDocumentsLogic.m in Sources */,
 				EE7A676A1CBB5EAE00CB252C /* CHGotoDoc.m in Sources */,
 				EE7A67701CBB5ED600CB252C /* NSObject+CHIgnoreUndefinedKey.m in Sources */,
+				EE1C036A1D0EB3A30095D925 /* CHDocumentsCache.m in Sources */,
+				EE1C036E1D0EB4670095D925 /* CHDocumentItem.m in Sources */,
 				EE7A676F1CBB5ED600CB252C /* NSNotification+CHPlugin.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -269,6 +287,7 @@
 				EE7A67671CBB5E7B00CB252C /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
 	};

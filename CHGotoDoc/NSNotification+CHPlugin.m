@@ -17,6 +17,48 @@ typedef NS_ENUM(NSUInteger, CHTargetType) {
 
 @implementation NSNotification (CHPlugin)
 
+#pragma mark - Path
+- (NSString*)chGetDevicePath
+{
+    NSString *deviceId = [self chGetDeviceId];
+    if (deviceId.length == 0) {
+        return nil;
+    }
+    return [NSString stringWithFormat:@"%@/Library/Developer/CoreSimulator/Devices/%@/data/Containers", NSHomeDirectory(),deviceId];
+}
+
+- (NSString*)chGetAppPath
+{
+    NSString *devicePath = [self chGetDevicePath];
+    if (devicePath == nil) {
+        return nil;
+    }
+    return [NSString stringWithFormat:@"%@/Data/Application", devicePath];
+}
+
+- (NSString*)chGetPluginPath
+{
+    NSString *devicePath = [self chGetDevicePath];
+    if (devicePath == nil) {
+        return nil;
+    }
+    return [NSString stringWithFormat:@"%@/Data/PluginKitPlugin", devicePath];
+}
+
+- (NSString*)chGetGroupPath
+{
+    NSString *devicePath = [self chGetDevicePath];
+    if (devicePath == nil) {
+        return nil;
+    }
+    return [NSString stringWithFormat:@"%@/Shared/AppGroup", devicePath];
+}
+
+
+
+
+
+
 - (NSArray*)chGetDeviceAppPath
 {
     NSString *deviceId = [self chGetDeviceId];
