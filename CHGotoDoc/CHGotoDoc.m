@@ -84,6 +84,7 @@ static NSString * const kCHPluginsMenuTitle = @"Plugins";
 
 - (void)updateDocList
 {
+    [CHDocumentsLogic installDoc];
     [self.recentDocsMenuItem.submenu removeAllItems];
     
     NSArray <CHDocumentItem*>*recentDocs = [CHDocumentsLogic getRecentDocuments];
